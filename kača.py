@@ -9,37 +9,53 @@ class Kaca:
         self.IDkaca = None
         self.xKaca = random.randint(60, 640)
         self.yKaca = random.randint(60, 640)
-        self.dKaca = 10
-        self.dKrogec = 8
+        self.dKaca = 10 # velikost glave kace
+        self.dKrogec = 8 # velikost bonboncka
         self.narisiKrogec()
         self.narisiKaca(self.xKaca, self.yKaca)
         self.smer = 0
         self.canvas.bind_all('<Left>', self.levo)
         self.canvas.bind_all('<Right>', self.desno)
-        self.premik()
+        self.pritisnjenGumb()
 
-        menu = Menu(root)
-        root.config(menu = menu)
 
         #FRAME
 
-        self.gumbStart = Button(self.canvas, text = 'START')
+        #GUMB      
+
+        self.gumbStart = Button(master, text = 'START', command = self.pritisnjenGumb)
+        self.gumbStart.pack()
         self.gumbStart.configure(width = 10, height = 5)
         self.gumbStart_window = self.canvas.create_window(350, 350, window = self.gumbStart)
+        self.pritisnjen = False
+
+
+
+
+        self.premik()   # NA KONCU
+
+        menu = Menu(root)
+        root.config(menu = menu)
 
 
 
 
 
     def narisiKaca(self, xKaca, yKaca):
-        self.IDkaca = self.canvas.create_oval(xKaca-self.dKaca,yKaca-self.dKaca,xKaca+self.dKaca,yKaca+self.dKaca,fill='black')
+        self.IDkaca = self.canvas.create_oval(self.xKaca - self.dKaca,
+                                              self.yKaca - self.dKaca,
+                                              self.xKaca + self.dKaca,
+                                              self.yKaca + self.dKaca, fill = 'black')
 
 
     def narisiKrogec(self):
         '''na random mesto na platnu narišemo krogec'''
-        x = random.randint(10,690)
-        y = random.randint(10,690)
-        self.IDkrogec=self.canvas.create_oval(x-self.dKrogec,y-self.dKrogec,x+self.dKrogec,y+self.dKrogec, fill='red', outline='black')
+        self.xKrogec = random.randint(10,690)
+        self.yKrogec = random.randint(10,690)
+        self.IDkrogec = self.canvas.create_oval(self.xKrogec - self.dKrogec,
+                                              self.yKrogec - self.dKrogec,
+                                              self.xKrogec + self.dKrogec,
+                                              self.yKrogec + self.dKrogec, fill='red', outline='black')
 
     def levo(self,event):
         self.smer = (self.smer + 1) % 4
@@ -47,18 +63,75 @@ class Kaca:
     def desno(self,event):
         self.smer = (self.smer - 1) % 4
 
+    def pritisnjenGumb(self):
+        self.pritisnjen = True
+        #self.canvas.delete(self.gumbStart_window) #skrije gumb
+
+    def preveriRob(self):
+        if self.xKaca == 11 or self.xKaca == 692 or self.yKaca == 11 or self.yKaca == 692:
+            self.pritisnjen = False
+
+    def pojejBonboncek(self):        
+        self.canvas.delete(self.IDkrogec)
+        self.narisiKrogec()
+        
+    # kačo in krogec definiramo z seznamom koordinat
+    
+    def seznamKoordinatKrogca(self):
+        '''krogcu priredimo seznam'''
+        self.seznamKrogcaX = []
+        self.seznamKrogcaY = []
+        for i in range(8):
+            self.seznamKrogcaX.append(self.xKrogec + i)
+            self.seznamKrogcaX.append(self.xKrogec - i)
+            self.seznamKrogcaY.append(self.yKrogec + i)
+            self.seznamKrogcaY.append(self.yKrogec - i)
+        return self.seznamKrogcaX, self.seznamKrogcaY
+
+    def seznamKoordinatKace(self):
+        '''kači priredimo seznam'''
+        self.seznamKaceX = []
+        self.seznamKaceY = []
+        for i in range(8):
+            self.seznamKaceX.append(self.xKaca + i)
+            self.seznamKaceX.append(self.xKaca - i)
+            self.seznamKaceY.append(self.yKaca + i)
+            self.seznamKaceY.append(self.yKaca - i)
+        return self.seznamKaceX, self.seznamKaceY
+
 
     def premik(self):
-
+        '''funkcija uravnava gibanje kače'''
+        
         sez = [ (1,0), (0,-1), (-1,0), (0,1)]
 
-        self.xKaca += sez[self.smer][0]
-        self.yKaca += sez[self.smer][1]
+        if self.pritisnjen:
+            self.xKaca += sez[self.smer][0]
+            self.yKaca += sez[self.smer][1]
+            self.canvas.coords(self.IDkaca,
+                               self.xKaca - self.dKaca,
+                               self.yKaca - self.dKaca,
+                               self.xKaca + self.dKaca,
+                               self.yKaca + self.dKaca)
+        
+        seznamKrogca = self.seznamKoordinatKrogca()
+        seznamXkrogca = seznamKrogca[0]
+        seznamYkrogca = seznamKrogca[1]
+        seznamKaca = self.seznamKoordinatKace()
+        seznamXkaca = seznamKaca[0]
+        seznamYkaca = seznamKaca[1]
 
-        #xpremik = self.xKaca
-        #ypremik = self.yKaca
-        self.canvas.coords(self.IDkaca, self.xKaca-self.dKaca,self.yKaca-self.dKaca,self.xKaca+self.dKaca,self.yKaca+self.dKaca)
-        self.canvas.after(30, self.premik)
+        # preverjamo ali je koordinata v seznamu, širši rang je zaradi lažjega ujemanja
+        # ko kača poje krogec
+        for x in seznamXkaca:
+            for y in seznamYkaca:
+                if x in seznamXkrogca and y in seznamYkrogca:
+                    self.pojejBonboncek()
+
+        self.canvas.after(13, self.premik)
+        self.preveriRob()
+
+    
 
 
 
