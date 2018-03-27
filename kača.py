@@ -28,7 +28,10 @@ class Kaca:
         self.gumbStart_window = self.canvas.create_window(350, 350, window = self.gumbStart)
         self.pritisnjen = False
 
-        levaCrta = self.canvas.create_line(0,0,700, 0, fill = 'blue')
+        zgornjaCrta = self.canvas.create_line(3,3,700, 3, fill = 'blue', width = 2)
+        desnaCrta = self.canvas.create_line(700,3,700, 700, fill = 'blue',width = 2)
+        levaCrta = self.canvas.create_line(3,3,3, 700, fill = 'blue',width = 2)
+        spodnjaCrta = self.canvas.create_line(3, 700, 700, 700, fill = 'blue',width = 2)
 
 
 
