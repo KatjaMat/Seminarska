@@ -7,16 +7,15 @@ class Kaca:
         self.canvas.pack()
         self.IDkrogec = None
         self.IDkaca = None
-        self.xKaca = random.randint(60, 640)
-        self.yKaca = random.randint(60, 640)
+        self.xKaca = random.randrange(60, 640, 10)
+        self.yKaca = random.randrange(60, 640, 10)
         self.dKaca = 10 # velikost glave kace
-        self.dKrogec = 8 # velikost bonboncka
+        self.dKrogec = 10 # velikost bonboncka
         self.narisiKrogec()
         self.narisiKaca(self.xKaca, self.yKaca)
         self.smer = 0
         self.canvas.bind_all('<Left>', self.levo)
         self.canvas.bind_all('<Right>', self.desno)
-        self.pritisnjenGumb()
 
 
         #FRAME
@@ -28,6 +27,8 @@ class Kaca:
         self.gumbStart.configure(width = 10, height = 5)
         self.gumbStart_window = self.canvas.create_window(350, 350, window = self.gumbStart)
         self.pritisnjen = False
+
+        levaCrta = self.canvas.create_line(0,0,700, 0, fill = 'blue')
 
 
 
@@ -50,8 +51,8 @@ class Kaca:
 
     def narisiKrogec(self):
         '''na random mesto na platnu narišemo krogec'''
-        self.xKrogec = random.randint(10,690)
-        self.yKrogec = random.randint(10,690)
+        self.xKrogec = random.randrange(10, 690, 10)
+        self.yKrogec = random.randrange(10, 690, 10)
         self.IDkrogec = self.canvas.create_oval(self.xKrogec - self.dKrogec,
                                               self.yKrogec - self.dKrogec,
                                               self.xKrogec + self.dKrogec,
@@ -99,11 +100,14 @@ class Kaca:
             self.seznamKaceY.append(self.yKaca - i)
         return self.seznamKaceX, self.seznamKaceY
 
+    #def rastiKacaRep(self):
+        
+
 
     def premik(self):
         '''funkcija uravnava gibanje kače'''
         
-        sez = [ (1,0), (0,-1), (-1,0), (0,1)]
+        sez = [ (10,0), (0,-10), (-10,0), (0,10)]
 
         if self.pritisnjen:
             self.xKaca += sez[self.smer][0]
@@ -128,7 +132,7 @@ class Kaca:
                 if x in seznamXkrogca and y in seznamYkrogca:
                     self.pojejBonboncek()
 
-        self.canvas.after(13, self.premik)
+        self.canvas.after(100, self.premik)
         self.preveriRob()
 
     
