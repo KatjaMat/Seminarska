@@ -25,7 +25,6 @@ class Kaca:
         #GUMB      
 
         self.gumbStart = Button(master, text = 'START', command = self.pritisnjenGumb)
-        self.gumbStart.pack()
         self.gumbStart.configure(width = 10, height = 5)
         self.gumbStart_window = self.canvas.create_window(350, 350, window = self.gumbStart)
         self.pritisnjen = False
@@ -60,7 +59,9 @@ class Kaca:
                                               self.xKaca + self.dKaca -i*15,
                                               self.yKaca + self.dKaca, fill = 'pink'))
 
-
+        print(self.IDkaca)
+        print(self.seznamGlavaRep)
+        print(self.IDkrogec)
 
     def narisiKrogec(self):
         '''na random mesto na platnu narišemo krogec'''
@@ -85,12 +86,18 @@ class Kaca:
     def preveriRob(self): #konec igre
         if self.xKaca == 3 or self.xKaca == 708 or self.yKaca == 3 or self.yKaca == 708:
             self.pritisnjen = False
-            for el in self.seznamGlavaRep:
-                self.canvas.delete(el)
-            self.xKaca = 153
-            self.yKaca = 153
-            self.narisiKaca(self.xKaca, self.yKaca)
-            self.pritisnjen = False
+            self.reset()
+
+
+    def reset(self):
+        self.xKaca = 153
+        self.yKaca = 153
+        for el in self.seznamGlavaRep:
+            self.canvas.delete(el)
+        self.seznamGlavaRep = []
+        self.narisiKaca(self.xKaca, self.yKaca)
+        self.gumbStart_window = self.canvas.create_window(350, 350, window=self.gumbStart)
+        self.smer = 0
 
 
     def pojejBonboncek(self):        
