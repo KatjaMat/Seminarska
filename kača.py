@@ -59,9 +59,11 @@ class Kaca:
                                               self.xKaca + self.dKaca -i*15,
                                               self.yKaca + self.dKaca, fill = 'pink'))
 
-        print(self.IDkaca)
-        print(self.seznamGlavaRep)
-        print(self.IDkrogec)
+
+
+        #print(self.IDkaca)
+        #print(self.seznamGlavaRep)
+        #print(self.IDkrogec)
 
     def narisiKrogec(self):
         '''na random mesto na platnu narišemo krogec'''
