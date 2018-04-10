@@ -48,6 +48,7 @@ class Kaca:
 
 
     def narisiKaca(self, xKaca, yKaca):
+        '''narise kaco na zacetku igre'''
         self.IDkaca = self.canvas.create_oval(self.xKaca - self.dKaca,
                                               self.yKaca - self.dKaca,
                                               self.xKaca + self.dKaca,
@@ -81,6 +82,7 @@ class Kaca:
         self.smer = (self.smer - 1) % 4
 
     def pritisnjenGumb(self):
+        '''ce je gumb pritisnjen, se kaca zacne premikati'''
         self.pritisnjen = True
         self.canvas.delete(self.gumbStart_window) #skrije gumb
 
@@ -92,6 +94,7 @@ class Kaca:
 
 
     def reset(self):
+        '''klicemo jo 2krat, ce se zaletimo v rob ali sam vase'''
         self.xKaca = 153
         self.yKaca = 153
         for el in self.seznamGlavaRep:
@@ -134,6 +137,17 @@ class Kaca:
 
     #def rastiKacaRep(self):
 
+    def preveriZaletiSeNekam(self):
+        '''preveri, ce se je kaca zaletela sama vase'''
+        stej = 0
+        preveri = self.canvas.coords(self.IDkaca) #preverjamo ce bodo koordinate glave kdaj iste kot koordinate drugega dela telesa, to bi pomenilo, da smo se zaleteli
+        for el in self.seznamGlavaRep:
+            if preveri == self.canvas.coords(el):
+                stej +=1
+        if stej >= 2:
+            self.pritisnjen = False
+            self.reset()
+
 
 
 
@@ -142,7 +156,7 @@ class Kaca:
 
         sez = [ (15,0), (0,-15), (-15,0), (0,15)]
 
-        if self.pritisnjen:
+        if self.pritisnjen: 
             self.xKaca += sez[self.smer][0]
             self.yKaca += sez[self.smer][1]
             self.canvas.coords(self.IDkaca,
@@ -150,6 +164,7 @@ class Kaca:
                                self.yKaca - self.dKaca,
                                self.xKaca + self.dKaca,
                                self.yKaca + self.dKaca)
+        
 
 
         seznamKrogca = self.seznamKoordinatKrogca()
@@ -197,6 +212,8 @@ class Kaca:
 
         self.canvas.after(100, self.premik)
         self.preveriRob()
+        self.preveriZaletiSeNekam()
+        
 
     
 
