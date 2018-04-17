@@ -1,4 +1,6 @@
 from  tkinter import *
+from math import *
+from time import *
 import random
 
 class Kaca:
@@ -18,6 +20,8 @@ class Kaca:
         self.smer = 0
         self.canvas.bind_all('<Left>', self.levo)
         self.canvas.bind_all('<Right>', self.desno)
+        self.stevec = 0
+        self.stanje = ''
 
 
         #FRAME
@@ -35,16 +39,16 @@ class Kaca:
         levaCrta = self.canvas.create_line(3,3,3, 708, fill = 'blue',width = 2)
         spodnjaCrta = self.canvas.create_line(3, 708, 708, 708, fill = 'blue',width = 2)
 
-
+        #stevec
+        self.canvas.create_text((655, 53), text=str(self.stevec), font=(16), tag='stevec')
+        self.canvas.create_text((354, 100), text='ZAČNI IGRO S PRITISKOM NA GUMB START.',
+                                font=(500), tag='dober')
 
 
         self.premik()   # NA KONCU
 
         menu = Menu(root)
         root.config(menu = menu)
-
-
-
 
 
     def narisiKaca(self, xKaca, yKaca):
@@ -85,11 +89,15 @@ class Kaca:
         '''ce je gumb pritisnjen, se kaca zacne premikati'''
         self.pritisnjen = True
         self.canvas.delete(self.gumbStart_window) #skrije gumb
+        if self.stanje == 'slab':
+            self.canvas.delete('slab')
+        else:
+            self.canvas.delete('dober')
 
 
     def preveriRob(self): #konec igre
         if self.xKaca == 3 or self.xKaca == 708 or self.yKaca == 3 or self.yKaca == 708:
-            self.pritisnjen = False
+            self.stanje = 'slab'
             self.reset()
 
 
@@ -101,39 +109,33 @@ class Kaca:
             self.canvas.delete(el)
         self.seznamGlavaRep = []
         self.narisiKaca(self.xKaca, self.yKaca)
-        self.gumbStart_window = self.canvas.create_window(350, 350, window=self.gumbStart)
         self.smer = 0
+
+
+        if self.stanje == 'slab':
+            self.canvas.create_text((354,100), text = 'ZELO SI BIL SLAB. DOSEGEL SI: '+ str(self.stevec)+ ' TOČK', font = (500), tag = 'slab')
+        elif self.stanje == 'dober':
+            self.canvas.create_text((354, 100), text='NAJ TI BO. ZMAGAL SI IGRO S ' + str(self.stevec) + ' TOČKAMI',
+                                    font=(500), tag='dober')
+
+
+        self.pritisnjen = False
+        self.gumbStart_window = self.canvas.create_window(350, 350, window=self.gumbStart)
+        self.stevec = 0
+        self.canvas.delete('stevec')
+        self.canvas.create_text((655, 53), text=str(self.stevec), font=(16), tag='stevec')
+
 
 
     def pojejBonboncek(self):        
         self.canvas.delete(self.IDkrogec)
         self.narisiKrogec()
         self.podaljsaj = True
+        self.canvas.delete('stevec')
+        self.canvas.create_text((655, 53), text=str(self.stevec), font=(16), tag = 'stevec')
 
         
     # kačo in krogec definiramo z seznamom koordinat
-    
-    def seznamKoordinatKrogca(self):
-        '''krogcu priredimo seznam'''
-        self.seznamKrogcaX = []
-        self.seznamKrogcaY = []
-        for i in range(8):
-            self.seznamKrogcaX.append(self.xKrogec + i)
-            self.seznamKrogcaX.append(self.xKrogec - i)
-            self.seznamKrogcaY.append(self.yKrogec + i)
-            self.seznamKrogcaY.append(self.yKrogec - i)
-        return self.seznamKrogcaX, self.seznamKrogcaY
-
-    def seznamKoordinatKace(self):
-        '''kači priredimo seznam'''
-        self.seznamKaceX = []
-        self.seznamKaceY = []
-        for i in range(8):
-            self.seznamKaceX.append(self.xKaca + i)
-            self.seznamKaceX.append(self.xKaca - i)
-            self.seznamKaceY.append(self.yKaca + i)
-            self.seznamKaceY.append(self.yKaca - i)
-        return self.seznamKaceX, self.seznamKaceY
 
     #def rastiKacaRep(self):
 
@@ -145,7 +147,7 @@ class Kaca:
             if preveri == self.canvas.coords(el):
                 stej +=1
         if stej >= 2:
-            self.pritisnjen = False
+            self.stanje = 'slab'
             self.reset()
 
 
@@ -164,15 +166,7 @@ class Kaca:
                                self.yKaca - self.dKaca,
                                self.xKaca + self.dKaca,
                                self.yKaca + self.dKaca)
-        
 
-
-        seznamKrogca = self.seznamKoordinatKrogca()
-        seznamXkrogca = seznamKrogca[0]
-        seznamYkrogca = seznamKrogca[1]
-        seznamKaca = self.seznamKoordinatKace()
-        seznamXkaca = seznamKaca[0]
-        seznamYkaca = seznamKaca[1]
 
         if self.pritisnjen:
             self.canvas.delete(self.seznamGlavaRep[-1])
@@ -205,10 +199,16 @@ class Kaca:
 
         # preverjamo ali je koordinata v seznamu, širši rang je zaradi lažjega ujemanja
         # ko kača poje krogec
-        for x in seznamXkaca:
-            for y in seznamYkaca:
-                if x in seznamXkrogca and y in seznamYkrogca:
-                    self.pojejBonboncek()
+
+        d = sqrt((self.xKrogec-self.xKaca)**2+(self.yKrogec-self.yKaca)**2)
+        if d <= 12:
+            self.stevec += 1
+            self.pojejBonboncek()
+        if self.stevec == 25:
+            self.stanje = 'dober'
+            self.reset()
+
+
 
         self.canvas.after(100, self.premik)
         self.preveriRob()
@@ -223,5 +223,7 @@ class Kaca:
 root = Tk()
 
 aplikacija = Kaca(root)
+
+root.title('Boriz - The Snake')
 
 root.mainloop()
