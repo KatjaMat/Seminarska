@@ -14,7 +14,8 @@ public class Krogec extends Lik{
 	public void narisiSe(Graphics g) {
 		g.setColor(Color.RED);
 		g.fillOval(x, y, 25, 25);
-		
 	}
+	
+
 }
 

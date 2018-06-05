@@ -4,7 +4,7 @@ import java.awt.Graphics;
 import java.awt.Stroke;
 
 // https://docs.oracle.com/javase/tutorial/java/IandI/abstract.html
-public abstract class Lik {
+public abstract class Lik{
     protected int x;
     protected int y;
     protected Color barvaObrobe;

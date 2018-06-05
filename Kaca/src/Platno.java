@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -7,15 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class Platno extends JPanel implements ActionListener {
     private List<Lik> liki;
-    private Kaca kaca;
+    protected Kaca kaca;
     private Krogec krogec;
     protected boolean igraTece;
     private Timer timer;
+    private int stevec = 0;
+    private JLabel tocke;
     
     public Platno() {
         super();
@@ -26,7 +30,10 @@ public class Platno extends JPanel implements ActionListener {
         
         timer = new Timer(20,this);
         timer.start();
-        //timer.addActionListener(this);
+        
+        this.tocke = new JLabel("TOÈKE: "+ stevec);
+        tocke.setBounds(0, 600, 100, 50);
+        this.add(tocke);
         
     }
     
@@ -42,9 +49,9 @@ public class Platno extends JPanel implements ActionListener {
     
     public void narisiKrogec() {
     	Random rand = new Random(); 
-    	int x = rand.nextInt(700);
-    	int y = rand.nextInt(700);
-    	krogec = new Krogec(x, y);
+    	int krogecx = rand.nextInt(680);
+    	int krogecy = rand.nextInt(680);
+    	krogec = new Krogec(krogecx, krogecy);
     	dodajLik(krogec);
     	repaint();
     }
@@ -54,7 +61,27 @@ public class Platno extends JPanel implements ActionListener {
         liki.clear();
         repaint();
     }
-
+    
+    public void pojejBonboncek (){
+    	if ((kaca.x >= krogec.x-12 && kaca.x <= krogec.x+12) && (kaca.y >= krogec.y-12 && kaca.y <= krogec.y+12)){
+        	krogec.x = 1500;
+    		krogec.y = 1500;
+    		narisiKrogec();
+    		stevec += 1;
+    		tocke.setText("TOÈKE: "+ stevec);
+    		
+    	}
+    }
+    public void zaletiSe (){
+    	if((kaca.x >= 700)|| (kaca.x <= 0) || (kaca.y >= 700) || (kaca.y <= 0)){
+    		kaca.x = 100;
+    		kaca.y = 100;
+    		igraTece = false;
+    		stevec = 0;
+    		tocke.setText("TOÈKE: "+ stevec);
+    		
+    	}
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -73,14 +100,28 @@ public class Platno extends JPanel implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == timer){
+			//KONTROLSI
 			if (igraTece){
-				kaca.x += 1;
+				if(Okno.levo){
+					kaca.x-=3;
+				}
+				else if(Okno.desno){
+					kaca.x += 3;
+				}
+				else if(Okno.gor){
+					kaca.y -= 3;
+				}
+				else if(Okno.dol){
+					kaca.y += 3;
+				}
+				zaletiSe();
+				pojejBonboncek();
 				repaint();
-				System.out.println("0");
 			}
 		}
 		
 	}
     
+	
     
 }
